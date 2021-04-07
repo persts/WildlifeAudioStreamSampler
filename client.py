@@ -51,8 +51,13 @@ def process_data(socket):
     buffer = bytearray()
     while len(buffer) < (SAMPLE_RATE * 4) * LENGTH:
         buffer += socket.recv(4096)
-    
     audio = np.frombuffer(buffer, dtype=np.int32)
+
+    # Write full audio
+    file_name = os.path.join(timestamp, '{}.wav'.format(timestamp))
+    sf.write(file_name, audio, SAMPLE_RATE)
+
+    # Create samples
     iterations = (LENGTH // (SAMPLE_LENGTH - OVERLAP)) - 1
     for s in range(iterations):
         start = SAMPLE_RATE * (s * (SAMPLE_LENGTH - OVERLAP))
